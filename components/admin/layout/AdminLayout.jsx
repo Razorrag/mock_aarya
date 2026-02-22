@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 
-// Mock user for development
+// Mock user for development - always use this
 const MOCK_USER = {
   id: 1,
   username: 'admin',
@@ -18,63 +18,14 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(MOCK_USER); // Always use mock user
+  const [loading, setLoading] = useState(false); // No loading needed - bypass auth
   const isMountedRef = React.useRef(true);
 
-  // Check authentication with proper SSR handling
-  const checkAuth = useCallback(() => {
-    // Only run on client side
-    if (typeof window === 'undefined') return;
-    
-    try {
-      // In development, use mock user
-      const isDev = process.env.NEXT_PUBLIC_AUTH_BYPASS === 'true';
-      
-      if (isDev) {
-        if (isMountedRef.current) {
-          setUser(MOCK_USER);
-          setLoading(false);
-        }
-        return;
-      }
+  // Auth bypass - always allow access
+  // No authentication check needed
 
-      // Check for stored user (safe to access localStorage here)
-      const storedUser = localStorage.getItem('user');
-      const token = localStorage.getItem('access_token');
-      
-      if (!storedUser || !token) {
-        router.push('/auth/login');
-        return;
-      }
-
-      const userData = JSON.parse(storedUser);
-      
-      // Check if user has admin/staff role
-      if (userData.role !== 'admin' && userData.role !== 'staff') {
-        router.push('/');
-        return;
-      }
-
-      if (isMountedRef.current) {
-        setUser(userData);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      router.push('/auth/login');
-    }
-  }, [router]);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    checkAuth();
-    
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, [checkAuth]);
-
+  // Minimal loading state for initial render
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050203] flex items-center justify-center">
