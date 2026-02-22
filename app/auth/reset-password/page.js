@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Lock, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
@@ -8,7 +8,23 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 
-export default function ResetPasswordPage() {
+// Loading skeleton
+function ResetPasswordLoadingSkeleton() {
+  return (
+    <div className="w-full max-w-[480px] lg:max-w-[520px] xl:max-w-[560px] flex flex-col items-center">
+      <div className="animate-pulse w-24 h-24 sm:w-28 sm:h-28 bg-[#B76E79]/20 rounded-full mb-8" />
+      <div className="animate-pulse h-8 w-48 bg-[#B76E79]/20 rounded mb-4" />
+      <div className="w-full space-y-4">
+        <div className="animate-pulse h-14 bg-[#B76E79]/10 rounded-2xl" />
+        <div className="animate-pulse h-14 bg-[#B76E79]/10 rounded-2xl" />
+        <div className="animate-pulse h-14 bg-[#B76E79]/10 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
+// Main content component
+function ResetPasswordContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -198,5 +214,14 @@ export default function ResetPasswordPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+// Default export with Suspense wrapper
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<ResetPasswordLoadingSkeleton />}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

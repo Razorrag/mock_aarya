@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Lock, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
@@ -8,7 +8,23 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { apiFetch } from '../../../lib/api';
 
-export default function VerifyResetTokenPage() {
+// Loading skeleton
+function VerifyResetTokenLoadingSkeleton() {
+  return (
+    <div className="w-full max-w-[420px] flex flex-col items-center">
+      <div className="animate-pulse w-20 h-20 sm:w-24 sm:h-24 bg-[#B76E79]/20 rounded-full mb-8" />
+      <div className="animate-pulse h-8 w-48 bg-[#B76E79]/20 rounded mb-4" />
+      <div className="w-full space-y-4">
+        <div className="animate-pulse h-12 bg-[#B76E79]/10 rounded-2xl" />
+        <div className="animate-pulse h-12 bg-[#B76E79]/10 rounded-2xl" />
+        <div className="animate-pulse h-12 bg-[#B76E79]/10 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
+// Main content component
+function VerifyResetTokenContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [token, setToken] = useState('');
@@ -203,5 +219,14 @@ export default function VerifyResetTokenPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+// Default export with Suspense wrapper
+export default function VerifyResetTokenPage() {
+  return (
+    <Suspense fallback={<VerifyResetTokenLoadingSkeleton />}>
+      <VerifyResetTokenContent />
+    </Suspense>
   );
 }

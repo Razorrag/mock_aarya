@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
@@ -57,7 +57,19 @@ const RETURN_TYPES = [
   { value: 'exchange', label: 'Exchange for Different Item', description: 'Exchange for a different size, color, or product' },
 ];
 
-export default function CreateReturnPage() {
+// Loading skeleton
+function CreateReturnLoadingSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="animate-pulse h-6 w-32 bg-[#B76E79]/10 rounded" />
+      <div className="animate-pulse h-8 w-64 bg-[#B76E79]/10 rounded" />
+      <div className="animate-pulse h-96 bg-[#B76E79]/10 rounded-2xl" />
+    </div>
+  );
+}
+
+// Main content component
+function CreateReturnContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order');
@@ -518,5 +530,14 @@ export default function CreateReturnPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+// Default export with Suspense wrapper
+export default function CreateReturnPage() {
+  return (
+    <Suspense fallback={<CreateReturnLoadingSkeleton />}>
+      <CreateReturnContent />
+    </Suspense>
   );
 }

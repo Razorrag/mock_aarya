@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -47,7 +47,37 @@ const SORT_OPTIONS = [
   { value: 'rating', label: 'Highest Rated' },
 ];
 
-export default function ProductsPage() {
+// Loading skeleton component
+function ProductsLoadingSkeleton() {
+  return (
+    <main className="min-h-screen text-[#EAE0D5] selection:bg-[#F2C29A] selection:text-[#050203]">
+      <div className="relative z-10 page-wrapper">
+        <EnhancedHeader />
+        <div className="page-content">
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 header-spacing">
+            <div className="mb-8">
+              <div className="h-10 w-64 bg-[#B76E79]/20 rounded animate-pulse mb-2"></div>
+              <div className="h-5 w-96 bg-[#B76E79]/10 rounded animate-pulse"></div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[3/4] bg-[#B76E79]/10 rounded-2xl mb-3" />
+                  <div className="h-4 bg-[#B76E79]/10 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-[#B76E79]/10 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    </main>
+  );
+}
+
+// Main products content component that uses useSearchParams
+function ProductsContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -389,5 +419,14 @@ export default function ProductsPage() {
         />
       )}
     </main>
+  );
+}
+
+// Default export with Suspense wrapper
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<ProductsLoadingSkeleton />}>
+      <ProductsContent />
+    </Suspense>
   );
 }

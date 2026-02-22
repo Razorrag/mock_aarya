@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RotateCcw, Package, ChevronRight, Eye, Clock, CheckCircle, XCircle, Truck, AlertCircle, Plus } from 'lucide-react';
@@ -63,7 +63,25 @@ const MOCK_RETURNS = [
   },
 ];
 
-export default function ReturnsPage() {
+// Loading skeleton
+function ReturnsLoadingSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="h-8 w-48 bg-[#B76E79]/20 rounded animate-pulse"></div>
+        <div className="h-10 w-32 bg-[#B76E79]/20 rounded animate-pulse"></div>
+      </div>
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="animate-pulse h-32 bg-[#B76E79]/10 rounded-2xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Main content component
+function ReturnsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [returns, setReturns] = useState([]);
@@ -241,5 +259,14 @@ export default function ReturnsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Default export with Suspense wrapper
+export default function ReturnsPage() {
+  return (
+    <Suspense fallback={<ReturnsLoadingSkeleton />}>
+      <ReturnsContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Search, 
@@ -39,7 +39,24 @@ const STATUS_OPTIONS = [
   { value: 'refunded', label: 'Refunded' },
 ];
 
-export default function OrdersPage() {
+// Loading skeleton
+function OrdersLoadingSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div className="animate-pulse h-8 w-32 bg-[#B76E79]/20 rounded mb-2"></div>
+          <div className="animate-pulse h-4 w-64 bg-[#B76E79]/10 rounded"></div>
+        </div>
+      </div>
+      <div className="animate-pulse h-20 bg-[#B76E79]/10 rounded-2xl"></div>
+      <div className="animate-pulse h-96 bg-[#B76E79]/10 rounded-2xl"></div>
+    </div>
+  );
+}
+
+// Main content component
+function OrdersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -319,5 +336,14 @@ export default function OrdersPage() {
         emptyMessage="No orders found"
       />
     </div>
+  );
+}
+
+// Default export with Suspense wrapper
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={<OrdersLoadingSkeleton />}>
+      <OrdersContent />
+    </Suspense>
   );
 }
